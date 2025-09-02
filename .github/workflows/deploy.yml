@@ -10,6 +10,11 @@ permissions:
   pages: write
   id-token: write
 
+# Avoid overlapping deployments
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +26,9 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: cp dist/index.html dist/404.html
+      # Initialize GitHub Pages (fixes 404 create deployment)
+      - uses: actions/configure-pages@v5
+      # Upload the static site files
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
